@@ -63,7 +63,6 @@ class Trainer:
         total_loss = 0.0
         for i, data_batch in enumerate(train_data):
             self.optimizer.zero_grad()
-            session_idx = data_batch[0]
             vids_long = Variable(data_batch[0])
             vids_short_al = Variable(data_batch[1])
             tids = Variable(data_batch[2])
@@ -74,7 +73,9 @@ class Trainer:
             vids_next = Variable(data_batch[7])
             tids_next = Variable(data_batch[8])
             uids = Variable(data_batch[9])
+            short_cnt = Variable(data_batch[10])
             outputs = self.model(vids_long, len_long)
+            # outputs = self.model(vids_short_al, len_short_al, short_cnt)
             loss = self.criterion(outputs)
             loss.backward()
             self.optimizer.step()

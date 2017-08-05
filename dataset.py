@@ -57,8 +57,8 @@ class CheckinData(Dataset):
         vids_next = np.zeros(self.max_long_len, dtype=np.int)
         tids_next = np.zeros(self.max_long_len, dtype=np.int)
         vids_short_al = np.zeros((self.max_session_len, self.max_short_len), dtype=np.int)
-        mask_long = np.ones(self.max_long_len, dtype=np.int)
-        mask_short_al = np.ones((self.max_session_len, self.max_short_len), dtype=np.int)
+        mask_long = np.zeros(self.max_long_len, dtype=np.int)
+        mask_short_al = np.zeros((self.max_session_len, self.max_short_len), dtype=np.int)
         len_long = len(self.uid_vids_long[uid])
         len_short_al = np.zeros(self.max_session_len, dtype=np.int)
         for i in xrange(len(self.uid_vids_short_al[uid])):
@@ -68,15 +68,16 @@ class CheckinData(Dataset):
             tids[i] = self.uid_tids[uid][i]
             vids_next[i] = self.uid_vids_next[uid][i]
             tids_next[i] = self.uid_tids_next[uid][i]
-            mask_long[i] = 0
+            mask_long[i] = 1
         for i in xrange(len(len_short_al)):
             for j in xrange(len_short_al[i]):
                 vids_short_al[i][j] = self.uid_vids_short_al[uid][i][j]
-                mask_short_al[i][j] = 0
+                mask_short_al[i][j] = 1
         return torch.from_numpy(vids_long), torch.from_numpy(vids_short_al), torch.from_numpy(tids), \
                torch.LongTensor([len_long]), torch.from_numpy(len_short_al), \
-               torch.from_numpy(mask_long).byte(), torch.from_numpy(mask_short_al), \
-               torch.from_numpy(vids_next), torch.from_numpy(tids_next), torch.LongTensor([uid])
+               torch.from_numpy(mask_long), torch.from_numpy(mask_short_al), \
+               torch.from_numpy(vids_next), torch.from_numpy(tids_next), \
+               torch.LongTensor([uid]), torch.LongTensor([len(self.uid_vids_short_al[uid])])
 
 class Vocabulary:
     def __init__(self, data_file, id_offset=0):
