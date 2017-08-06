@@ -74,15 +74,14 @@ class Trainer:
             tids_next = Variable(data_batch[8])
             uids = Variable(data_batch[9])
             short_cnt = Variable(data_batch[10])
-            outputs = self.model(vids_long, len_long)
-            # outputs = self.model(vids_short_al, len_short_al, short_cnt)
+            outputs = self.model(vids_long, len_long, vids_short_al, len_short_al, short_cnt)
             loss = self.criterion(outputs)
             loss.backward()
             self.optimizer.step()
             total_loss += loss.data[0]
 
 if __name__ == "__main__":
-    torch.manual_seed(7)
+    torch.manual_seed(3)
     root_path = '/Users/quanyuan/Dropbox/Research/LocationCuda/small/'
     dataset_name = 'foursquare'
     opt = {'u_vocab_file': root_path + dataset_name + '/' + 'u.txt',
