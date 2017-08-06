@@ -18,9 +18,9 @@ class BiRNN(nn.Module):
         self.embedder_v = nn.Embedding(self.v_size, self.emb_dim_v, padding_idx=0)
         self.decoder = nn.Linear(self.hidden_dim * 2, self.v_size)
 
-    def get_hiddens_short(self, vids_short_al, len_short_al, short_cnt):
+    def get_hiddens_short(self, vids_short_al, len_short_al, short_cnt, mask_short_al):
+        print vids_short_al
         session_cnt_total = torch.sum(short_cnt, dim=0).data[0, 0]
-        max_session_cnt_a_user = torch.max(short_cnt).data[0]
         max_session_length_a_user = torch.max(len_short_al).data[0]
         max_vid_cnt_a_user = torch.max(len_short_al.sum(1)).data[0]
         user_cnt = vids_short_al.size(0)
@@ -30,7 +30,6 @@ class BiRNN(nn.Module):
             idx_u = []
             idx_u_zero = []
             for session_cnt in xrange(short_cnt.data[u, 0]):
-            # for session_cnt in xrange(max_session_cnt_a_user):
                 for i in xrange(max_session_length_a_user):
                     if i < len_short_al.data[u, session_cnt]:
                         idx_u.append(idx)
@@ -39,10 +38,6 @@ class BiRNN(nn.Module):
                     idx += 1
             while len(idx_u) < max_vid_cnt_a_user:
                 idx_u.append(idx_u_zero[0])
-            # for i in idx_u_zero:
-            #     if len(idx_u) == max_vid_cnt_a_user:
-            #         break
-            #     idx_u.append(i)
             for i in idx_u:
                 idx_al.append(i)
         seq_size = vids_short_al.size(2)
@@ -60,6 +55,8 @@ class BiRNN(nn.Module):
         index_original_idx = idx_original.view(-1, 1, 1).expand_as(unpack_hiddens)
         hiddens_unsorted = unpack_hiddens.gather(0, index_original_idx.long())
         hiddens_unsorted_linear = hiddens_unsorted.view(-1, self.hidden_dim)
+        print hiddens_unsorted_linear
+        raw_input()
         hiddens_unsorted_linear_valid = hiddens_unsorted_linear.index_select(0, Variable(torch.LongTensor(idx_al)))
         output = hiddens_unsorted_linear_valid.view(user_cnt, -1, self.hidden_dim)
         return output
@@ -79,7 +76,7 @@ class BiRNN(nn.Module):
         output = unpack_hiddens.gather(0, index_original_idx.long())
         return output
 
-    def forward(self, vids_long, len_long, vids_short_al, len_short_al, short_cnt):
+    def forward(self, vids_long, len_long, vids_short_al, len_short_al, short_cnt, mask_short_al):
         hiddens_long = self.get_hiddens_long(vids_long, len_long)
         hiddens_short = self.get_hiddens_short(vids_short_al, len_short_al,short_cnt)
         hiddens_comb = torch.cat((hiddens_long, hiddens_short), 2)
