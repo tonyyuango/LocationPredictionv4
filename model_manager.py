@@ -2,6 +2,7 @@ import time
 import torch
 import torch.nn as nn
 import torch.optim as optim
+from utils import format_list_to_string
 from torch.autograd import Variable
 from dataset import DataSet
 from birnn import BiRNN
@@ -9,6 +10,7 @@ from birnn import BiRNN
 class ModelManager:
     def __init__(self, opt):
         self.opt = opt
+        self.model_path = opt['path'] + 'model/'
 
     def build_model(self, model_type, dataset):
         u_size = dataset.u_vocab.size()
@@ -24,13 +26,31 @@ class ModelManager:
         self.load_model(model, model_type, best_epoch)
         return model, train_time
 
-    def load_model(self, model, model_type, epoch):
-        # TODO add
-        pass
-
     def init_model(self, model_type, u_size, v_size, t_size):
         if model_type == 'birnn':
             return BiRNN(v_size, self.opt['emb_dim_v'], self.opt['hidden_dim'])
+
+
+    def get_model_name(self, model_type):
+        emb_dim_v = self.opt['emb_dim_v']
+        hidden_dim = self.opt['hidden_dim']
+        batch_size = self.opt['batch_size']
+        n_epoch = self.opt['n_epoch']
+        dp = self.opt['dropout']
+        attributes = [model_type, 'DH', hidden_dim, 'DV', emb_dim_v, 'B', batch_size, 'E', n_epoch,
+                      'dp', dp]
+        model_name = format_list_to_string(attributes, '_')
+        return model_name + '.model'
+
+    def load_model(self, model, model_type):
+        model_name = self.get_model_name(model_type)
+        file_name = self.model_path + model_name
+        model.load_state_dict(torch.load(file_name))
+
+    def save_model(self, model, model_type):
+        model_name = self.get_model_name(model_type)
+        file_name = self.model_path + model_name
+        torch.save(model.state_dict(), file_name)
 
 class Trainer:
     def __init__(self, model, opt, model_type):
@@ -51,13 +71,14 @@ class Trainer:
         for epoch in xrange(self.n_epoch):
             self.train_one_epoch(train_data, epoch)
             if (epoch + 1) % self.save_gap == 0:
-                valid_hr1 = self.valid_one_epoch(test_data, epoch)
-                if valid_hr1 >= best_hr1:
-                    best_hr1 = valid_hr1
-                    best_epoch = epoch
+            #     valid_hr1 = self.valid_one_epoch(test_data, epoch)
+            #     if valid_hr1 >= best_hr1:
+            #         best_hr1 = valid_hr1
+            #         best_epoch = epoch
                     model_manager.save_model(self.model, self.model_type)
         end = time.time()
         return end - start, best_epoch
+
 
     def train_one_epoch(self, train_data, epoch):
         total_loss = 0.0
@@ -69,29 +90,31 @@ class Trainer:
             len_long = Variable(data_batch[3])
             len_short_al = Variable(data_batch[4])
             mask_long = Variable(data_batch[5])
-            mask_short_al = Variable(data_batch[6])
-            # print 'mask_long: ', mask_long
-            # print 'mask_short_al: ', mask_short_al
-            vids_next = Variable(data_batch[7])
+            mask_test = Variable(data_batch[6])
+            vids_next = Variable(data_batch[7]).masked_select(mask_test)
             tids_next = Variable(data_batch[8])
             uids = Variable(data_batch[9])
             short_cnt = Variable(data_batch[10])
-            outputs = self.model(vids_long, len_long, vids_short_al, len_short_al, short_cnt, mask_short_al)
-            loss = self.criterion(outputs)
+            outputs = self.model(vids_long, len_long, vids_short_al, len_short_al, short_cnt, mask_long, mask_test)
+            loss = self.criterion(outputs, vids_next)
             loss.backward()
             self.optimizer.step()
             total_loss += loss.data[0]
+            # print i, total_loss
+        print epoch, total_loss
 
 if __name__ == "__main__":
     torch.manual_seed(3)
     root_path = '/Users/quanyuan/Dropbox/Research/LocationCuda/small/'
     dataset_name = 'foursquare'
-    opt = {'u_vocab_file': root_path + dataset_name + '/' + 'u.txt',
-           'v_vocab_file': root_path + dataset_name + '/' + 'v.txt',
-           'train_data_file': root_path + dataset_name + '/' + 'train.txt',
-           'test_data_file': root_path + dataset_name + '/' + 'test.txt',
-           'coor_nor_file': root_path + dataset_name + '/' + 'coor_nor.txt',
-           'train_log_file': root_path + dataset_name + '/' + 'log.txt',
+    path = root_path + dataset_name + '/'
+    opt = {'path': path,
+            'u_vocab_file': path+ 'u.txt',
+           'v_vocab_file': path + 'v.txt',
+           'train_data_file': path + 'train.txt',
+           'test_data_file': path + 'test.txt',
+           'coor_nor_file': path + 'coor_nor.txt',
+           'train_log_file': path + 'log.txt',
            'id_offset': 1,
            'n_epoch': 50,
            'batch_size': 2,
@@ -99,7 +122,8 @@ if __name__ == "__main__":
            'load_model': False,
            'emb_dim_v': 32,
            'hidden_dim': 16,
-           'save_gap': 5
+           'save_gap': 5,
+           'dropout': 0.5
            }
     dataset = DataSet(opt)
     manager = ModelManager(opt)
