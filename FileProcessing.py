@@ -171,19 +171,40 @@ class DataLoader(object):
             vids_next = [[], []]
             tids_next = [[], []]
             for rid, record in enumerate(records_u.records):
-                role_id = 0 if rid < records_u.test_idx else 1
                 if record.is_first:
                     vids_short = []
-                vids_long[role_id].append(record.vid)
                 vids_short.append(record.vid)
-                tids[role_id].append(record.tid)
-                vids_next[role_id].append(record.vid_next)
-                tids_next[role_id].append(record.tid_next)
+                if rid < records_u.test_idx:
+                    vids_long[0].append(record.vid)
+                    tids[0].append(record.tid)
+                    vids_next[0].append(record.vid_next)
+                    tids_next[0].append(record.tid_next)
+                vids_long[1].append(record.vid)
+                tids[1].append(record.tid)
+                vids_next[1].append(record.vid_next)
+                tids_next[1].append(record.tid_next)
                 if record.is_last:
-                    vids_short_al[role_id].append(vids_short)
+                    if rid < records_u.test_idx:
+                        vids_short_al[0].append(vids_short)
+                    vids_short_al[1].append(vids_short)
                     vids_short = []
-            f_train.write(str(uid) + ',' + str(len(vids_short_al[0]))+ '\n')
-            f_test.write(str(uid) + ',' + str(len(vids_short_al[1]))+ '\n')
+                #
+                #
+                #
+                #
+                # role_id = 0 if rid < records_u.test_idx else 1
+                # if record.is_first:
+                #     vids_short = []
+                # vids_long[role_id].append(record.vid)
+                # vids_short.append(record.vid)
+                # tids[role_id].append(record.tid)
+                # vids_next[role_id].append(record.vid_next)
+                # tids_next[role_id].append(record.tid_next)
+                # if record.is_last:
+                #     vids_short_al[role_id].append(vids_short)
+                #     vids_short = []
+            f_train.write(str(uid) + ',' + str(len(vids_short_al[0])) + ',' + str(records_u.test_idx) + '\n')
+            f_test.write(str(uid) + ',' + str(len(vids_short_al[1])) + ',' + str(records_u.test_idx) + '\n')
             f_train.write(','.join([str(vid) for vid in vids_long[0]]) + '\n')
             f_test.write(','.join([str(vid) for vid in vids_long[1]]) + '\n')
             for vids_short in vids_short_al[0]:

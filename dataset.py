@@ -9,6 +9,7 @@ class CheckinData(Dataset):
         self.uid_tids = []
         self.uid_vids_next = []
         self.uid_tids_next = []
+        self.uid_test_idx = []
 
         f_data = open(data_path, 'r')
         lines = f_data.readlines()
@@ -16,7 +17,8 @@ class CheckinData(Dataset):
         i = 0
         while i < len(lines):
             # read userid, #session
-            uid, cnt = map(int, lines[i].split(','))
+            uid, cnt, test_idx = map(int, lines[i].split(','))
+            self.uid_test_idx.append(test_idx)
             i += 1
             # read whole trajectory
             self.uid_vids_long.append(np.fromstring(lines[i], dtype=np.int32, sep=',') + id_offset)
@@ -79,9 +81,10 @@ class CheckinData(Dataset):
                     mask_test[idx] = 1
                 idx += 1
         return torch.from_numpy(vids_long), torch.from_numpy(vids_short_al), torch.from_numpy(tids), \
-               torch.LongTensor([len_long]), torch.from_numpy(len_short_al), torch.from_numpy(mask_long).byte(), torch.from_numpy(mask_test).byte(), \
+               torch.LongTensor([len_long]), torch.from_numpy(len_short_al), \
+               torch.from_numpy(mask_long).byte(), torch.from_numpy(mask_test).byte(), \
                torch.from_numpy(vids_next), torch.from_numpy(tids_next), \
-               torch.LongTensor([uid]), torch.LongTensor([len(self.uid_vids_short_al[uid])])
+               torch.LongTensor([uid]), torch.LongTensor([self.uid_test_idx[uid]]), torch.LongTensor([len(self.uid_vids_short_al[uid])])
 
 class Vocabulary:
     def __init__(self, data_file, id_offset=0):
@@ -118,20 +121,3 @@ class DataSet:
         self.train_loader = DataLoader(train_data, batch_size=batch_size, shuffle=True, num_workers=n_worker)
         self.test_loader = DataLoader(test_data, batch_size=batch_size, shuffle=True, num_workers=n_worker)
 
-if __name__ == "__main__":
-    root_path = '/Users/quanyuan/Dropbox/Research/LocationCuda/small/'
-    dataset_name = 'foursquare'
-    opt = {'u_vocab_file': root_path + dataset_name + '/' + 'u.txt',
-           'v_vocab_file': root_path + dataset_name + '/' + 'v.txt',
-           'train_data_file': root_path + dataset_name + '/' + 'train.txt',
-           'test_data_file': root_path + dataset_name + '/' + 'test.txt',
-           'coor_nor_file': root_path + dataset_name + '/' + 'coor_nor.txt',
-           'id_offset': 1,
-           'batch_size': 10,
-           'data_worker': 1}
-    dataset = DataSet(opt)
-    train_data = dataset.train_loader
-    # print dataset.train_loader
-    # for i, data_batch in enumerate(train_data):
-    #     print 'batch: ', i
-    #     print data_batch
