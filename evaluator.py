@@ -17,8 +17,10 @@ class Evaluator:
         hits = np.zeros(3)
         cnt = 0
         for data_batch in test_data:
-            vids_long, len_long, vids_short_al, len_short_al, short_cnt, mask_long, vids_next, mask_optim, mask_test = self.convert_to_variable(data_batch)
-            outputs = self.model(vids_long, len_long, vids_short_al, len_short_al, short_cnt, mask_long, mask_optim, mask_test)
+            vids_long, len_long, vids_short_al, len_short_al, tids_next, short_cnt, mask_long, vids_next, mask_optim, mask_evaluate = self.convert_to_variable(
+                data_batch)
+            outputs = self.model(vids_long, len_long, vids_short_al, len_short_al, tids_next, short_cnt, mask_long,
+                                 mask_optim, mask_evaluate)
             hits_batch = self.get_hits(outputs, vids_next)
             hits += hits_batch
             cnt += outputs.size(0)
@@ -64,7 +66,11 @@ class Evaluator:
                     if idx < test_idx.data[uid, 0]:
                         mask_evaluate.data[uid, idx] = 0
         vids_next = Variable(data_batch[7]).masked_select(mask_optim if mask_evaluate is None else mask_evaluate)
+        # print 'len_short_al: ', len_short_al
+        # print 'len_long: ', len_long
+        # print 'test_idx: ', test_idx
+        # print 'vids_next: ', vids_next
         if use_cuda:
-            return vids_long.cuda(), len_long.cuda(), vids_short_al.cuda(), len_short_al.cuda(), short_cnt.cuda(), mask_long.cuda(), vids_next.cuda(), mask_optim.cuda(), mask_evaluate.cuda()
+            return vids_long.cuda(), len_long.cuda(), vids_short_al.cuda(), len_short_al.cuda(), tids_next, short_cnt.cuda(), mask_long.cuda(), vids_next.cuda(), mask_optim.cuda(), mask_evaluate.cuda()
         else:
-            return vids_long, len_long, vids_short_al, len_short_al, short_cnt, mask_long, vids_next, mask_optim, mask_evaluate
+            return vids_long, len_long, vids_short_al, len_short_al, tids_next, short_cnt, mask_long, vids_next, mask_optim, mask_evaluate
