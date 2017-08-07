@@ -17,7 +17,7 @@ class Trainer:
         self.criterion = nn.NLLLoss()
         self.optimizer = optim.Adam(self.model.parameters())
 
-    def train(self, train_data, test_data, model_manager):
+    def train(self, train_data, model_manager):
         best_hr1 = 0
         best_epoch = 0
         start = time.time()

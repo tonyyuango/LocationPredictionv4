@@ -6,9 +6,7 @@ from model_manager import ModelManager
 
 if __name__ == "__main__":
     torch.manual_seed(3)
-    root_path = '/Users/quanyuan/Dropbox/Research/LocationCuda/' \
-        if os.path.exists('/Users/quanyuan/Dropbox/Research/LocationCuda/') \
-        else '/shared/data/qyuan/LocationCuda/'
+    root_path = '/Users/quanyuan/Dropbox/Research/LocationCuda/' if os.path.exists('/Users/quanyuan/Dropbox/Research/LocationCuda/') else '/shared/data/qyuan/LocationCuda/'
     dataset_name = 'foursquare'
     path = root_path + 'small/' + dataset_name + '/'
     opt = {'path': path,
@@ -26,8 +24,10 @@ if __name__ == "__main__":
            'emb_dim_v': 32,
            'hidden_dim': 16,
            'save_gap': 5,
-           'dropout': 0.5
+           'dropout': 0.5,
+           'epoch': 1200
            }
     dataset = DataSet(opt)
     manager = ModelManager(opt)
     manager.build_model('birnn', dataset)
+    # manager.evaluate('birnn', dataset)

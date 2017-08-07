@@ -46,7 +46,7 @@ class BiRNN(nn.Module):
         index_original_idx = idx_original.view(-1, 1, 1).expand_as(unpack_hiddens)
         hiddens_unsorted = unpack_hiddens.gather(0, index_original_idx.long())
         hiddens_unsorted_linear = hiddens_unsorted.view(-1, self.hidden_dim)
-        hiddens_unsorted_linear_valid = hiddens_unsorted_linear.index_select(0, torch.LongTensor(idx_al))
+        hiddens_unsorted_linear_valid = hiddens_unsorted_linear.index_select(0, Variable(torch.LongTensor(idx_al)))
         return hiddens_unsorted_linear_valid
 
     def get_hiddens_long(self, vids_long, len_long, mask_long_valid):
@@ -66,8 +66,8 @@ class BiRNN(nn.Module):
         return output_linear.masked_select(mask_long_valid_expand).view(-1, self.hidden_dim)
 
     def forward(self, vids_long, len_long, vids_short_al, len_short_al, short_cnt, mask_long, mask_optim, mask_evaluate):
-        mask_long_valid = mask_long.index_select(1, torch.LongTensor(xrange(torch.max(len_long).data[0])))
-        mask_optim_valid = (mask_optim if mask_evaluate is None else mask_evaluate).index_select(1, torch.LongTensor(xrange(torch.max(len_long).data[0]))).masked_select(mask_long_valid)
+        mask_long_valid = mask_long.index_select(1, Variable(torch.LongTensor(xrange(torch.max(len_long).data[0]))))
+        mask_optim_valid = (mask_optim if mask_evaluate is None else mask_evaluate).index_select(1, Variable(torch.LongTensor(xrange(torch.max(len_long).data[0])))).masked_select(mask_long_valid)
         hiddens_long = self.get_hiddens_long(vids_long, len_long, mask_long_valid)
         hiddens_short = self.get_hiddens_short(vids_short_al, len_short_al,short_cnt)
         hiddens_comb = torch.cat((hiddens_long, hiddens_short), 1)
