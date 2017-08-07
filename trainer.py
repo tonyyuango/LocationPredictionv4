@@ -57,7 +57,9 @@ class Trainer:
         short_cnt = Variable(data_batch[11])
         mask_evaluate = None
         # if there are records for evaluation
-        if torch.sum(len_long - test_idx, 0).data[0, 0] > 0:
+        # print torch.sum(len_long - test_idx, 0)
+        # raw_input()
+        if torch.sum(len_long - test_idx, 0).data[0] > 0:
             mask_evaluate = mask_optim.clone()
             for uid in xrange(len_long.size(0)):
                 for idx in xrange(len_long.data[uid, 0]):

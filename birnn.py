@@ -18,7 +18,7 @@ class BiRNN(nn.Module):
         self.decoder = nn.Linear(self.hidden_dim * 2, self.v_size)
 
     def get_hiddens_short(self, vids_short_al, len_short_al, short_cnt):
-        session_cnt_total = torch.sum(short_cnt, dim=0).data[0, 0]
+        session_cnt_total = torch.sum(short_cnt, dim=0).data[0]
         max_session_length_a_user = torch.max(len_short_al).data[0]
         user_cnt = vids_short_al.size(0)
         idx_al = []
