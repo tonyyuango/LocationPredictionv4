@@ -3,7 +3,8 @@ import torch.nn as nn
 import torch.nn.functional as F
 from torch.nn.utils.rnn import pack_padded_sequence, pad_packed_sequence
 from torch.autograd import Variable
-use_cuda = torch.cuda.is_available()
+# use_cuda = torch.cuda.is_available()
+use_cuda = False
 
 class BiRNN(nn.Module):
     def __init__(self, v_size, emb_dim_v, hidden_dim):
@@ -53,7 +54,14 @@ class BiRNN(nn.Module):
         len_long_sorted, idx_sorted = len_long.sort(0, descending=True)
         index_sorted_idx = idx_sorted.view(-1, 1).expand_as(vids_long)
         vids_long_sorted = vids_long.gather(0, index_sorted_idx.long())
-        vids_embeddings_sorted = self.embedder_v(vids_long_sorted)
+        try:
+            vids_embeddings_sorted = self.embedder_v(vids_long_sorted)
+        except:
+            for i in xrange(vids_long_sorted.size(0)):
+                for j in xrange(vids_long_sorted.size(1)):
+                    if vids_long_sorted.data[i, j] != 0:
+                        print vids_long_sorted.data[i, j], vids_long_sorted.data[i, j] < self.v_size
+            raw_input()
         vids_embeddings_sorted_packed = pack_padded_sequence(vids_embeddings_sorted, len_long_sorted.data.numpy(), batch_first=True)
         hidden_long = self.init_hidden(vids_long.size(0))
         hiddens_long, hidden_long = self.rnn_long(vids_embeddings_sorted_packed, hidden_long)

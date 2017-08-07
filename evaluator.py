@@ -5,8 +5,8 @@ import torch.optim as optim
 from utils import format_list_to_string
 from torch.autograd import Variable
 import numpy as np
-use_cuda = torch.cuda.is_available()
-
+# use_cuda = torch.cuda.is_available()
+use_cuda = False
 
 class Evaluator:
     def __init__(self, model, opt, model_type):
@@ -26,10 +26,20 @@ class Evaluator:
         return hits
 
     def get_hits(self, outputs, ground_truths):
-        print outputs
-        print ground_truths
-        raw_input()
-        return np.zeros(3), 0
+        hits = np.zeros(3)
+        _, vids_sorted = outputs.sort(1, descending=True)
+        for idx in xrange(vids_sorted.size(0)):
+            for top_k in xrange(min(vids_sorted.size(1), 10)):
+                print '\t', ground_truths.data[idx], vids_sorted.data[idx, top_k]
+                if ground_truths.data[idx] == vids_sorted.data[idx, top_k]:
+                    if top_k == 0:
+                        hits[0] += 1
+                    if top_k < 5:
+                        hits[1] += 1
+                    if top_k < 10:
+                        hits[2] += 1
+                    break
+        return hits
 
     def convert_to_variable(self, data_batch):
         vids_long = Variable(data_batch[0])

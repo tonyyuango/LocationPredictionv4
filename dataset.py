@@ -88,6 +88,7 @@ class CheckinData(Dataset):
 
 class Vocabulary:
     def __init__(self, data_file, id_offset=0):
+        self.id_offset = id_offset
         self.id_name = {}
         self.name_id = {}
         with open(data_file, 'r') as fin:
@@ -99,7 +100,7 @@ class Vocabulary:
                 self.name_id[name] = id
 
     def size(self):
-        return len(self.id_name)
+        return len(self.id_name) + self.id_offset
 
 class DataSet:
     def __init__(self, opt):
