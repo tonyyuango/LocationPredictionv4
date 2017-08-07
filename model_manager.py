@@ -29,7 +29,7 @@ class ModelManager:
         print 'evaluate'
         model = self.init_model(model_type, dataset.u_vocab.size(), dataset.v_vocab.size(), dataset.t_vocab_size)
         self.load_model(model, model_type, self.opt['epoch'])
-        evaluator = Evaluator(model, self.opt, model_type)
+        evaluator = Evaluator(model, self.opt)
         evaluator.eval(dataset.test_loader)
 
     def get_model_name(self, model_type, epoch):

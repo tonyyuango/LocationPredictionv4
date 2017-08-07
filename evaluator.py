@@ -9,7 +9,7 @@ import numpy as np
 use_cuda = False
 
 class Evaluator:
-    def __init__(self, model, opt, model_type):
+    def __init__(self, model, opt):
         self.model = model
         self.opt = opt
 
