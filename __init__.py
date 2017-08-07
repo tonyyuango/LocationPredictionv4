@@ -25,9 +25,9 @@ if __name__ == "__main__":
            'hidden_dim': 16,
            'save_gap': 5,
            'dropout': 0.5,
-           'epoch': 1200
+           'epoch': 450
            }
     dataset = DataSet(opt)
     manager = ModelManager(opt)
-    manager.build_model('birnn', dataset)
-    # manager.evaluate('birnn', dataset)
+    # manager.build_model('birnn', dataset)
+    manager.evaluate('birnn', dataset)

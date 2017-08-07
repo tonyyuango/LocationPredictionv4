@@ -23,6 +23,7 @@ class Evaluator:
             hits += hits_batch
             cnt += outputs.size(0)
         hits /= cnt
+        print hits
         return hits
 
     def get_hits(self, outputs, ground_truths):
@@ -30,7 +31,7 @@ class Evaluator:
         _, vids_sorted = outputs.sort(1, descending=True)
         for idx in xrange(vids_sorted.size(0)):
             for top_k in xrange(min(vids_sorted.size(1), 10)):
-                print '\t', ground_truths.data[idx], vids_sorted.data[idx, top_k]
+                # print '\t', ground_truths.data[idx], vids_sorted.data[idx, top_k]
                 if ground_truths.data[idx] == vids_sorted.data[idx, top_k]:
                     if top_k == 0:
                         hits[0] += 1
