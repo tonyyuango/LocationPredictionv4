@@ -39,6 +39,7 @@ class Trainer:
             loss.backward()
             self.optimizer.step()
             total_loss += loss.data[0]
+        # print 'epoch: ', epoch + 1, '\tloss: ', total_loss
         return total_loss
 
     def convert_to_variable(self, data_batch):
