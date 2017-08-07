@@ -3,8 +3,8 @@ import torch.nn as nn
 import torch.nn.functional as F
 from torch.nn.utils.rnn import pack_padded_sequence, pad_packed_sequence
 from torch.autograd import Variable
-# use_cuda = torch.cuda.is_available()
-use_cuda = False
+use_cuda = torch.cuda.is_available()
+# use_cuda = False
 
 class BiRNN(nn.Module):
     def __init__(self, v_size, emb_dim_v, hidden_dim):
