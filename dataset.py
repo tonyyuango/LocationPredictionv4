@@ -112,7 +112,7 @@ class DataSet:
         batch_size = opt['batch_size']
         n_worker = opt['data_worker']
         id_offset = opt['id_offset']
-        print 'id_offset: ', id_offset
+        # print 'id_offset: ', id_offset
         self.u_vocab = Vocabulary(u_vocab_file, id_offset=0)
         self.v_vocab = Vocabulary(v_vocab_file, id_offset=id_offset)
         self.t_vocab_size = 48

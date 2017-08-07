@@ -14,6 +14,7 @@ class ModelManager:
             return BiRNN(v_size, self.opt['emb_dim_v'], self.opt['hidden_dim'])
 
     def build_model(self, model_type, dataset):
+        print 'build_model'
         model = self.init_model(model_type, dataset.u_vocab.size(), dataset.v_vocab.size(), dataset.t_vocab_size)
         if self.opt['load_model']:
             self.load_model(model, model_type, self.opt['epoch'])
@@ -25,6 +26,7 @@ class ModelManager:
         return model, train_time
 
     def evaluate(self, model_type, dataset):
+        print 'evaluate'
         model = self.init_model(model_type, dataset.u_vocab.size(), dataset.v_vocab.size(), dataset.t_vocab_size)
         self.load_model(model, model_type, self.opt['epoch'])
         evaluator = Evaluator(model, self.opt, model_type)
