@@ -32,5 +32,5 @@ if __name__ == "__main__":
     dataset = DataSet(opt)
     manager = ModelManager(opt)
     model_type = 'birnnt'
-    # manager.build_model(model_type, dataset)
+    manager.build_model(model_type, dataset)
     manager.evaluate(model_type, dataset)

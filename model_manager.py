@@ -18,7 +18,7 @@ class ModelManager:
 
     def build_model(self, model_type, dataset):
         print 'build_model'
-        model = self.init_model(model_type, dataset.u_vocab.size(), dataset.v_vocab.size(), dataset.v_vocab.size())
+        model = self.init_model(model_type, dataset.u_vocab.size(), dataset.v_vocab.size(), dataset.t_vocab.size())
         if self.opt['load_model']:
             self.load_model(model, model_type, self.opt['epoch'])
             train_time = 0.0
@@ -30,7 +30,7 @@ class ModelManager:
 
     def evaluate(self, model_type, dataset):
         print 'evaluate'
-        model = self.init_model(model_type, dataset.u_vocab.size(), dataset.v_vocab.size(), dataset.v_vocab.size())
+        model = self.init_model(model_type, dataset.u_vocab.size(), dataset.v_vocab.size(), dataset.t_vocab.size())
         self.load_model(model, model_type, self.opt['epoch'])
         evaluator = Evaluator(model, self.opt)
         evaluator.eval(dataset.test_loader)
