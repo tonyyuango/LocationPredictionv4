@@ -3,8 +3,8 @@ import torch
 import torch.nn as nn
 import torch.optim as optim
 from torch.autograd import Variable
-# use_cuda = torch.cuda.is_available()
-use_cuda = False
+use_cuda = torch.cuda.is_available()
+# use_cuda = False
 
 class Trainer:
     def __init__(self, model, opt, model_type):

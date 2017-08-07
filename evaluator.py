@@ -5,8 +5,8 @@ import torch.optim as optim
 from utils import format_list_to_string
 from torch.autograd import Variable
 import numpy as np
-# use_cuda = torch.cuda.is_available()
-use_cuda = False
+use_cuda = torch.cuda.is_available()
+# use_cuda = False
 
 class Evaluator:
     def __init__(self, model, opt, model_type):
