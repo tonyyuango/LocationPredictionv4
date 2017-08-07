@@ -63,15 +63,14 @@ class CheckinData(Dataset):
         mask_test = np.zeros(self.max_long_len, dtype=np.int)
         len_long = len(self.uid_vids_long[uid])
         len_short_al = np.zeros(self.max_session_len, dtype=np.int)
-        short_len_cur = np.zeros(self.max_session_len, dtype=np.int)
-        idx = 0
-        for vids_short_al in self.uid_vids_short_al[uid]:
-            for i in xrange(len(vids_short_al)):
-                short_len_cur[idx] = i
-                idx += 1
-        print self.uid_vids_short_al[uid]
-        print short_len_cur
-        raw_input()
+        # short_len_cur = np.zeros(self.max_session_len, dtype=np.int)
+        # idx = 0
+        # for vids_short_al in self.uid_vids_short_al[uid]:
+        #     for i in xrange(len(vids_short_al)):
+        #         short_len_cur[idx] = i
+        #         idx += 1
+        # print self.uid_vids_short_al[uid]
+        # print short_len_cur
         for i in xrange(len(self.uid_vids_short_al[uid])):
             len_short_al[i] = len(self.uid_vids_short_al[uid][i])
         for i in xrange(len_long):
