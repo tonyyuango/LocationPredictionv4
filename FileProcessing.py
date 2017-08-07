@@ -228,12 +228,16 @@ class DataLoader(object):
         # f_coor_nor.close()
         f_u = open(root_path + "u.txt", 'w')
         f_v = open(root_path + "v.txt", 'w')
+        f_t = open(root_path + "t.txt", 'w')
         for u in self.u_uid:
             f_u.write(u + ',' + str(self.u_uid[u]) + '\n')
         for v in self.v_vid:
             f_v.write(v + ',' + str(self.v_vid[v]) + '\n')
+        for t in xrange(48):
+            f_t.write(str(t) + ',' + str(t) + '\n')
         f_u.close()
         f_v.close()
+        f_t.close()
 
 class Record(object):
     def __init__(self, dt, uid, vid, vid_next=-1, tid_next = -1, is_first=False, is_last=False, rid=None):

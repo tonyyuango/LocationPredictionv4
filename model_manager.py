@@ -3,6 +3,7 @@ from utils import format_list_to_string
 from birnn import BiRNN
 from trainer import Trainer
 from evaluator import Evaluator
+from birnnt import BiRNNT
 
 class ModelManager:
     def __init__(self, opt):
@@ -12,17 +13,19 @@ class ModelManager:
     def init_model(self, model_type, u_size, v_size, t_size):
         if model_type == 'birnn':
             return BiRNN(v_size, self.opt['emb_dim_v'], self.opt['hidden_dim'])
+        elif model_type == 'birnnt':
+            return BiRNNT(v_size, t_size, self.opt['emb_dim_v'], self.opt['emb_dim_t'],self.opt['hidden_dim'])
 
     def build_model(self, model_type, dataset):
         print 'build_model'
-        model = self.init_model(model_type, dataset.u_vocab.size(), dataset.v_vocab.size(), dataset.t_vocab_size)
+        model = self.init_model(model_type, dataset.u_vocab.size(), dataset.v_vocab.size(), dataset.v_vocab.size())
         if self.opt['load_model']:
             self.load_model(model, model_type, self.opt['epoch'])
             train_time = 0.0
             return model, train_time
         trainer = Trainer(model, self.opt, model_type)
-        train_time, best_epoch = trainer.train(dataset.train_loader, self)
-        self.load_model(model, model_type, best_epoch)
+        train_time = trainer.train(dataset.train_loader, self)
+        print 'train_time: ', train_time
         return model, train_time
 
     def evaluate(self, model_type, dataset):

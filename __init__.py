@@ -10,24 +10,27 @@ if __name__ == "__main__":
     dataset_name = 'foursquare'
     path = root_path + 'small/' + dataset_name + '/'
     opt = {'path': path,
-            'u_vocab_file': path+ 'u.txt',
+           'u_vocab_file': path+ 'u.txt',
            'v_vocab_file': path + 'v.txt',
+           't_vocab_file': path + 't.txt',
            'train_data_file': path + 'train.txt',
            'test_data_file': path + 'test.txt',
            'coor_nor_file': path + 'coor_nor.txt',
            'train_log_file': path + 'log.txt',
            'id_offset': 1,
-           'n_epoch': 2000,
+           'n_epoch': 5000,
            'batch_size': 50,
            'data_worker': 1,
            'load_model': False,
            'emb_dim_v': 32,
+           'emb_dim_t': 8,
            'hidden_dim': 16,
-           'save_gap': 5,
+           'save_gap': 20,
            'dropout': 0.5,
-           'epoch': 450
+           'epoch': 5000
            }
     dataset = DataSet(opt)
     manager = ModelManager(opt)
-    # manager.build_model('birnn', dataset)
-    manager.evaluate('birnn', dataset)
+    model_type = 'birnnt'
+    manager.build_model(model_type, dataset)
+    manager.evaluate(model_type, dataset)

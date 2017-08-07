@@ -106,6 +106,7 @@ class DataSet:
     def __init__(self, opt):
         u_vocab_file = opt['u_vocab_file']
         v_vocab_file = opt['v_vocab_file']
+        t_vocab_file = opt['t_vocab_file']
         train_file = opt['train_data_file']
         test_file = opt['test_data_file']
         coor_file = opt['coor_nor_file']
@@ -115,7 +116,7 @@ class DataSet:
         # print 'id_offset: ', id_offset
         self.u_vocab = Vocabulary(u_vocab_file, id_offset=0)
         self.v_vocab = Vocabulary(v_vocab_file, id_offset=id_offset)
-        self.t_vocab_size = 48
+        self.t_vocab = Vocabulary(t_vocab_file, id_offset=id_offset)
         train_data = CheckinData(train_file, id_offset=id_offset)
         test_data = CheckinData(test_file, id_offset=id_offset)
         vid_coor_nor = np.loadtxt(coor_file, delimiter=',', dtype=np.float64)
