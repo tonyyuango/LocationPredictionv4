@@ -2,10 +2,12 @@ import torch
 import torch.nn as nn
 from torch.autograd import Variable
 
-v = Variable(torch.LongTensor(range(10)))
+v = Variable(torch.zeros(0))
+print len(v)
+# v = Variable(torch.LongTensor(range(10)))
 # print v
-idx = Variable(torch.LongTensor([0, 2, 1]))
-print v.index_select(0, idx)
+# idx = Variable(torch.LongTensor([0, 2, 1]))
+# print v.index_select(0, idx)
 # batch_size = 4
 # max_length = 3
 # hidden_size = 2

@@ -75,7 +75,7 @@ class BiRNN(nn.Module):
 
     def forward(self, vids_long, len_long, vids_short_al, len_short_al, tids_next, short_cnt, mask_long, mask_optim, mask_evaluate):
         mask_long_valid = mask_long.index_select(1, Variable(torch.LongTensor(xrange(torch.max(len_long).data[0]))))
-        mask_optim_valid = (mask_optim if mask_evaluate is None else mask_evaluate).index_select(1, Variable(torch.LongTensor(xrange(torch.max(len_long).data[0])))).masked_select(mask_long_valid)
+        mask_optim_valid = (mask_optim if len(mask_evaluate) == 0 else mask_evaluate).index_select(1, Variable(torch.LongTensor(xrange(torch.max(len_long).data[0])))).masked_select(mask_long_valid)
         hiddens_long = self.get_hiddens_long(vids_long, len_long, mask_long_valid)
         hiddens_short = self.get_hiddens_short(vids_short_al, len_short_al,short_cnt)
         hiddens_comb = torch.cat((hiddens_long, hiddens_short), 1)

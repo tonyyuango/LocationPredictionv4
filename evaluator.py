@@ -57,7 +57,7 @@ class Evaluator:
         # print uids
         test_idx = Variable(data_batch[10])
         short_cnt = Variable(data_batch[11])
-        mask_evaluate = None
+        mask_evaluate = Variable(torch.zeros(0))
         # if there are records for evaluation
         if torch.sum(len_long - test_idx, 0).data[0, 0] > 0:
             mask_evaluate = mask_optim.clone()
@@ -65,7 +65,7 @@ class Evaluator:
                 for idx in xrange(len_long.data[uid, 0]):
                     if idx < test_idx.data[uid, 0]:
                         mask_evaluate.data[uid, idx] = 0
-        vids_next = Variable(data_batch[7]).masked_select(mask_optim if mask_evaluate is None else mask_evaluate)
+        vids_next = Variable(data_batch[7]).masked_select(mask_optim if len(mask_evaluate) == 0 else mask_evaluate)
         # print 'len_short_al: ', len_short_al
         # print 'len_long: ', len_long
         # print 'test_idx: ', test_idx
